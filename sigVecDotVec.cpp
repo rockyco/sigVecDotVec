@@ -12,25 +12,28 @@
 
 void sigVecDotVec(const std::complex<ap_fixed<W,I,AP_TRN,AP_SAT>> a[LEN_LTS_8],
                   const std::complex<ap_fixed<W,I,AP_TRN,AP_SAT>> b[LEN_LTS_8],
-                  std::complex<ap_fixed<W,I,AP_TRN,AP_SAT>> &c) 
+                  std::complex<ap_fixed<W,I,AP_TRN,AP_SAT>> &c)
 {
+#pragma HLS INLINE
     std::complex<ap_fixed<W+W,I,AP_TRN,AP_SAT>> a_conj_cast;
     std::complex<ap_fixed<W+W,I,AP_TRN,AP_SAT>> b_cast;
-    std::complex<ap_fixed<W+W_EXD+4,I+W_EXD+4-LARGE_NUM1,AP_TRN,AP_SAT>> sum_c;
+    std::complex<ap_fixed<W+W+3,I+3,AP_TRN,AP_SAT>> sum_c;
 
     MulAdd_loop:
     for (int i=0; i<LEN_LTS_8; i++) {
-#pragma HLS UNROLL
+#pragma HLS PIPELINE II=1
         a_conj_cast = std::conj(a[i]);
         b_cast = b[i];
-        sum_c += a_conj_cast*b_cast;
+        sum_c += a_conj_cast * b_cast;
+        //std::cout << "Real part - sum_c: " << sum_c.real() << '\n';
+        //std::cout << "Imag part - sum_c: " << sum_c.imag() << '\n';
     }
-    c = (sum_c >> (0+0));
+    c = sum_c;
 }
 
-void chest_conj_a_dot_b(const std::complex<ap_fixed<W,I,AP_TRN,AP_SAT> > a[8],
-                        const std::complex<ap_fixed<W,I,AP_TRN,AP_SAT> > b[8],
-                        std::complex<ap_fixed<W,I,AP_TRN,AP_SAT> > &c) {
+void chest_conj_a_dot_b(const std::complex<ap_fixed<W,I,AP_TRN,AP_SAT>> a[8],
+                        const std::complex<ap_fixed<W,I,AP_TRN,AP_SAT>> b[8],
+                        std::complex<ap_fixed<W,I,AP_TRN,AP_SAT>> &c) {
   #pragma HLS ARRAY_PARTITION variable=a,b complete dim=1
   #pragma HLS PIPELINE II=1
 

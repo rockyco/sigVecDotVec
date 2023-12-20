@@ -6,6 +6,9 @@
 #define PIPELINE_OPT
 #define LEN_LTS_8 8
 
+const int W_EXD = 13; //
+const int LARGE_NUM1 = 15; //
+
 static const int W = 16; // default bit width
 static const int I = 1; // default int part width
 
